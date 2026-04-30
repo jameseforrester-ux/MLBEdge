@@ -1,0 +1,40 @@
+[Unit]
+Description=Polymarket MLB Value Bot (Telegram)
+Documentation=https://github.com/YOUR_USERNAME/polymarket-mlb-bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+# Run as a dedicated user — see README for setup. The HOME and WorkingDirectory
+# settings expect the bot at /home/botuser/polymarket-mlb-bot.
+User=botuser
+Group=botuser
+WorkingDirectory=/home/botuser/polymarket-mlb-bot
+
+# Use the venv's python so we don't depend on system packages
+ExecStart=/home/botuser/polymarket-mlb-bot/.venv/bin/python -u main.py
+
+# Auto-restart on crash with backoff
+Restart=on-failure
+RestartSec=10s
+StartLimitIntervalSec=5min
+StartLimitBurst=5
+
+# Don't let the bot consume unbounded memory
+MemoryMax=512M
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/home/botuser/polymarket-mlb-bot
+
+# Logs go to journald — use `journalctl -u polymarket-mlb-bot -f` to tail
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
